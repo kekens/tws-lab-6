@@ -10,6 +10,9 @@ import ru.kekens.dto.KeyValueParamsDto;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import static ru.kekens.utils.Constants.*;
@@ -35,6 +38,7 @@ public class AccountResource {
     @POST
     public List<Account> getAccounts(AccountsRequest accountsRequest) {
         // Проверяем параметры
+        parseDateInRequest(accountsRequest.getList());
         List<KeyValueParamsDto> params = accountsRequest.getList();
         return getAccountDAO().getAccountsByParams(params);
     }
@@ -177,6 +181,22 @@ public class AccountResource {
             this.errorMessage = errorMessage;
         }
 
+    }
+
+    private void parseDateInRequest(List<KeyValueParamsDto> params) {
+        // Преобразование строки в объект Date вручную
+        for (KeyValueParamsDto param : params) {
+            if ("open_date".equals(param.getKey()) && param.getValue() instanceof String) {
+                String dateString = (String) param.getValue();
+                try {
+                    Date date = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+                    param.setValue(date);
+                } catch (ParseException e) {
+                    // Обработка ошибки парсинга даты
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 }

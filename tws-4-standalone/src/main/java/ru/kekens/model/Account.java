@@ -13,7 +13,6 @@ import java.util.Objects;
 /**
  * Счет
  */
-//@XmlRootElement
 public class Account {
 
     /**
@@ -44,7 +43,6 @@ public class Account {
     /**
      * Дата открытия
      */
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Europe/Moscow")
     @XmlJavaTypeAdapter(DateAdapter.class)
     @Temporal(TemporalType.DATE)
     private LocalDateTime openDate;

@@ -294,8 +294,8 @@ public class AccountDAO {
             stmt.setInt(index, (Integer) value);
         } else if (value instanceof BigDecimal) {
             stmt.setBigDecimal(index, (BigDecimal) value);
-        } else if (value instanceof XMLGregorianCalendar) {
-            stmt.setDate(index, new java.sql.Date(((XMLGregorianCalendar) value).toGregorianCalendar().getTime().getTime()));
+        } else if (value instanceof Date) {
+            stmt.setDate(index, new java.sql.Date(((Date) value).getTime()));
         } else {
             log("Не поддерживается тип данных параметра " + value.getClass().getName());
             System.out.println("Не поддерживается тип данных параметра " + value.getClass().getName());

@@ -6,10 +6,10 @@
 
     <parent>
         <groupId>ru.kekens</groupId>
-        <artifactId>tws-lab-4-rest-search</artifactId>
+        <artifactId>tws-lab-5-rest-crud</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>tws-4-client</artifactId>
+    <artifactId>tws-rest-client</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

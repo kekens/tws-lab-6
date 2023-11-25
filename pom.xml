@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ru.kekens</groupId>
-    <artifactId>tws-lab-4-rest-search</artifactId>
+    <artifactId>tws-lab-5-rest-crud</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>tws-lab-4-rest-search</name>
+    <name>tws-lab-5-rest-crud</name>
     <packaging>pom</packaging>
     <modules>
-        <module>tws-4-standalone</module>
-        <module>tws-4-client</module>
+        <module>tws-rest-standalone</module>
+        <module>tws-rest-client</module>
     </modules>
 
     <properties>

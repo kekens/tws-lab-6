@@ -8,6 +8,7 @@ import ru.kekens.model.Account;
 import ru.kekens.dao.AccountDAO;
 import ru.kekens.dto.KeyValueParamsDto;
 
+import javax.jws.WebMethod;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -26,7 +27,7 @@ public class AccountResource {
 
     @Path("/{id}")
     @GET
-    public Account getAccountById(Long id) {
+    public Account getAccountById(@PathParam("id") Long id) {
         return getAccountDAO().getAccountById(id);
     }
 
@@ -35,12 +36,40 @@ public class AccountResource {
         return getAccountDAO().getAccounts();
     }
 
+    @Path("/filter")
     @POST
     public List<Account> getAccounts(AccountsRequest accountsRequest) {
         // Проверяем параметры
         parseDateInRequest(accountsRequest.getList());
         List<KeyValueParamsDto> params = accountsRequest.getList();
         return getAccountDAO().getAccountsByParams(params);
+    }
+
+    @POST
+    public Long insertAccount(AccountsRequest accountsRequest) {
+        // Проверяем параметры
+        parseDateInRequest(accountsRequest.getList());
+        return getAccountDAO().insertAccount(accountsRequest.getList());
+    }
+
+    @Path("/{id}")
+    @PUT
+    public Boolean updateAccount(@PathParam("id") Long id, AccountsRequest accountsRequest) {
+        // Проверяем параметры
+        parseDateInRequest(accountsRequest.getList());
+        return getAccountDAO().updateAccount(id, accountsRequest.getList());
+    }
+
+    @Path("/{id}")
+    @DELETE
+    public Boolean deleteAccount(@PathParam("id") Long id) {
+        return getAccountDAO().deleteAccount(id);
+    }
+
+    @Path("/all")
+    @DELETE
+    public Boolean deleteAccounts() {
+        return getAccountDAO().deleteAccounts();
     }
 
     private AccountDAO getAccountDAO() {

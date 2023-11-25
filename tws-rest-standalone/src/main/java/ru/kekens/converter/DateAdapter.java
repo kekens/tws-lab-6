@@ -1,4 +1,4 @@
-package converter;
+package ru.kekens.converter;
 
 import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 

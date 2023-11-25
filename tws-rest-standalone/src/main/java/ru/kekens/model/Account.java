@@ -1,7 +1,7 @@
 package ru.kekens.model;
 
 
-import converter.DateAdapter;
+import ru.kekens.converter.DateAdapter;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import javax.persistence.Temporal;

@@ -12,6 +12,7 @@ import ru.kekens.dto.AccountsRequest;
 import ru.kekens.dto.KeyValueParamsDto;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -53,7 +54,7 @@ public class RestfulServiceClient {
         requestIns1.getList().addAll(List.of(paramsInsDto1, paramsInsDto2, paramsInsDto3, paramsInsDto4, paramsInsDto5));
         Long id = insertAccount(target, requestIns1);
 
-        System.out.println("\nRequest 1 - INSERT (New account 1, 30303, derivative, 10.00, 2021-04-04)\n" +
+        System.out.println("\nЗапрос 1 - INSERT (New account 1, 30303, derivative, 10.00, 2021-04-04)\n" +
                 "New id: " + id);
 
         // Запрос 2
@@ -76,19 +77,40 @@ public class RestfulServiceClient {
         requestIns2.getList().addAll(List.of(paramsInsDto6, paramsInsDto7, paramsInsDto8, paramsInsDto9, paramsInsDto10));
         Long id2 = insertAccount(target, requestIns2);
 
-        System.out.println("\nRequest 2 - INSERT (New account 2, 63696, fictious, 111.999, 2023-09-01)\n" +
+        System.out.println("\nЗапрос 2 - INSERT (New account 2, 63696, fictious, 111.999, 2023-09-01)\n" +
                 "New id: " + id2);
 
         // Запрос 3
-//        AccountsRequest requestIns3 = new AccountsRequest();
-//        KeyValueParamsDto paramsInsDto11 = new KeyValueParamsDto();
-//        paramsInsDto11.setKey("label");
-//        paramsInsDto11.setValue("New account 3");
-//        requestIns3.getList().add(paramsInsDto11);
-//        Long id3 = insertAccount(target, requestIns3);
-//
-//        System.out.println("\nRequest 3 - INSERT (New account 3)\n" +
-//                "New id: " + id3);
+        AccountsRequest requestIns3 = new AccountsRequest();
+        KeyValueParamsDto paramsInsDto11 = new KeyValueParamsDto();
+        paramsInsDto11.setKey("label");
+        paramsInsDto11.setValue("New account 3");
+        requestIns3.getList().add(paramsInsDto11);
+        Long id3 = insertAccount(target, requestIns3);
+
+        System.out.println("\nЗапрос 3 - INSERT (New account 3)\n" +
+                "New id: " + id3);
+
+        // Запрос 4
+        System.out.println("\nЗапрос 4 - INSERT wrong param amount5\n");
+        AccountsRequest requestIns4 = new AccountsRequest();
+        KeyValueParamsDto paramsInsDto12 = new KeyValueParamsDto();
+        paramsInsDto12.setKey("label");
+        paramsInsDto12.setValue("New account 2");
+        KeyValueParamsDto paramsInsDto13 = new KeyValueParamsDto();
+        paramsInsDto13.setKey("code");
+        paramsInsDto13.setValue("63696");
+        KeyValueParamsDto paramsInsDto14 = new KeyValueParamsDto();
+        paramsInsDto14.setKey("category");
+        paramsInsDto14.setValue("fictious");
+        KeyValueParamsDto paramsInsDto15 = new KeyValueParamsDto();
+        paramsInsDto15.setKey("amount");
+        paramsInsDto15.setValue("2023-09-01");
+        KeyValueParamsDto paramsInsDto16 = new KeyValueParamsDto();
+        paramsInsDto16.setKey("open_date");
+        paramsInsDto16.setValue("2023-09-01");
+        requestIns4.getList().addAll(List.of(paramsInsDto12, paramsInsDto13, paramsInsDto14, paramsInsDto15, paramsInsDto16));
+        Long id4 = insertAccount(target, requestIns4);
 
         // Все счета
         List<Account> accountList = getAccounts(target, null);
@@ -100,7 +122,7 @@ public class RestfulServiceClient {
 
         // Запросы по обновлению
         System.out.println("\n------ START UPDATE ACCOUNTS ------ ");
-        System.out.println("Request 1 - UPDATE account SET category=personal, amount=-1000, label = New account 1 after update\n" +
+        System.out.println("Запрос 1 - UPDATE account SET category=personal, amount=-1000, label = New account 1 after update\n" +
                 "WHERE id = " + id);
         // Запрос 1 - Обновить новый счет 1
         AccountsRequest requestUpd1 = new AccountsRequest();
@@ -117,7 +139,7 @@ public class RestfulServiceClient {
         updateAccount(target, id, requestUpd1);
 
         // Запрос 2 - Обновить новый счет 2
-        System.out.println("Request 2 - UPDATE account SET category=personal, amount=-3000, open_date = 2014-09-01\n" +
+        System.out.println("Запрос 2 - UPDATE account SET category=personal, amount=-3000, open_date = 2014-09-01\n" +
                 "WHERE id = " + id2 + "\n");
         AccountsRequest requestUpd2 = new AccountsRequest();
         KeyValueParamsDto paramsUpdDto4 = new KeyValueParamsDto();
@@ -133,7 +155,6 @@ public class RestfulServiceClient {
         updateAccount(target, id2, requestUpd2);
 
         // Получить счета 1 и 2
-        // Запрос 4
         AccountsRequest requestGetNewAccounts = new AccountsRequest();
         KeyValueParamsDto paramsDtoNew1 = new KeyValueParamsDto();
         paramsDtoNew1.setKey("id");
@@ -151,19 +172,44 @@ public class RestfulServiceClient {
         for (Account account : accountList) {
             printAccountInfo(account);
         }
+
+        // Запрос 3 - Update account null
+        System.out.println("\nЗапрос 3 - Update account null");
+        AccountsRequest requestUpd3 = new AccountsRequest();
+        updateAccount(target, null, null);
+
+        // Запрос 4 - Update account empty
+        System.out.println("Request 4 - Update account empty");
+        updateAccount(target, id2, null);
+
+        // Запрос 5 - Update not existed account
+        System.out.println("Request 5 - Update account empty");
+        updateAccount(target, 100100L, null);
+        System.out.println("------ END UPDATE ACCOUNTS ------ ");
+        
         System.out.println("------ END UPDATE ACCOUNTS ------ ");
 
         // Запросы по удалению счетов
         System.out.println("\n------ START DELETE ACCOUNTS ------ ");
-        System.out.println("Request 1 - DELETE FROM account " +
+        System.out.println("Запрос 1 - DELETE FROM account " +
                 "WHERE id = " + id);
         // Запрос 1 - Удалить новый счет 1
         deleteAccount(target, id);
 
         // Запрос 2 - Удалить новый счет 2
-        System.out.println("Request 2 - DELETE FROM account " +
+        System.out.println("Запрос 2 - DELETE FROM account " +
                 "WHERE id = " + id2);
         deleteAccount(target, id2);
+
+        // Запрос 3 - Delete account by null
+        System.out.println("Request 3 - DELETE FROM account " +
+                "WHERE id = null");
+        deleteAccount(target, null);
+
+        // Запрос 4 - Delete account with negative id
+        System.out.println("Request 4 - DELETE FROM account " +
+                "WHERE id = -1");
+        deleteAccount(target, -1L);
 
         // Все счета
         accountList = getAccounts(target, null);
@@ -173,7 +219,7 @@ public class RestfulServiceClient {
         }
 
         // Запрос 3 - Удалить все счета
-//        System.out.println("\nRequest 3 - DELETE FROM account");
+//        System.out.println("\nЗапрос 3 - DELETE FROM account");
 //        deleteAccounts(target);
 
         accountList = getAccounts(target, null);
@@ -199,7 +245,7 @@ public class RestfulServiceClient {
     private static void getAccounts(WebTarget target) throws ParseException {
         System.out.println("------ START GET ACCOUNTS ------ ");
         // Запрос 0
-        System.out.println("Request 0 - All");
+        System.out.println("Запрос 0 - All");
         List<Account> accountList = getAccounts(target, null);
         printAccountInfo(accountList);
 
@@ -213,7 +259,7 @@ public class RestfulServiceClient {
         request1.getList().add(paramsDto1);
         accountList = getAccounts(target, request1);
 
-        System.out.println("\nRequest 1 - by category \"personal\". Found " + accountList.size() + " accounts");
+        System.out.println("\nЗапрос 1 - by category \"personal\". Found " + accountList.size() + " accounts");
         printAccountInfo(accountList);
 
         // Запрос 2
@@ -226,7 +272,7 @@ public class RestfulServiceClient {
         request2.getList().add(paramsDto2);
         accountList = getAccounts(target, request2);
 
-        System.out.println("\nRequest 2 - by date > 2022-01-01. Found " + accountList.size() + " accounts");
+        System.out.println("\nЗапрос 2 - by date > 2022-01-01. Found " + accountList.size() + " accounts");
         printAccountInfo(accountList);
 
         // Запрос 3
@@ -235,7 +281,7 @@ public class RestfulServiceClient {
         request3.getList().add(paramsDto2);
         accountList = getAccounts(target, request3);
 
-        System.out.println("\nRequest 3 - by category \"personal\" and date > 2022-01-01. Found " + accountList.size() + " accounts");
+        System.out.println("\nЗапрос 3 - by category \"personal\" and date > 2022-01-01. Found " + accountList.size() + " accounts");
         printAccountInfo(accountList);
 
         // Запрос 4
@@ -255,7 +301,7 @@ public class RestfulServiceClient {
         request4.getList().add(paramsDto4);
         accountList = getAccounts(target, request4);
 
-        System.out.println("\nRequest 4 - by label LIKE \"Test\" or amount < 0. Found " + accountList.size() + " accounts");
+        System.out.println("\nЗапрос 4 - by label LIKE \"Test\" or amount < 0. Found " + accountList.size() + " accounts");
         printAccountInfo(accountList);
 
         // Запрос 5
@@ -289,39 +335,39 @@ public class RestfulServiceClient {
         request5.getList().add(paramsDto8);
         accountList = getAccounts(target, request5);
 
-        System.out.println("\nRequest 5 - by code LIKE \"47\" and category = \"personal\" and amount > 0 and " +
+        System.out.println("\nЗапрос 5 - by code LIKE \"47\" and category = \"personal\" and amount > 0 and " +
                 "date = \"2020-04-05\". Found " + accountList.size() + " accounts");
         printAccountInfo(accountList);
 
         System.out.println("------ END GET ACCOUNTS ------ ");
 
-//        // Запрос 6
-//        AccountsRequest request6 = new AccountsRequest();
-//        KeyValueParamsDto paramsDto9 = new KeyValueParamsDto();
-//        paramsDto9.setKey("code");
-//        paramsDto9.setValue(47L);
-//        paramsDto9.setCompareOperation("LIKE");
-//        paramsDto9.setLogicOperation("AND");
-//        request6.getList().add(paramsDto9);
-//        System.out.println("\nRequest 6 - by Long code");
-//        accountList = getAccounts(accountService, request6);
-//
-//        // Запрос 7
-//        AccountsRequest request7 = new AccountsRequest();
-//        KeyValueParamsDto paramsDto10 = new KeyValueParamsDto();
-//        paramsDto10.setKey("code");
-//        paramsDto10.setValue(BigInteger.TEN);
-//        paramsDto10.setCompareOperation("LIKE");
-//        paramsDto10.setLogicOperation("AND");
-//        request7.getList().add(paramsDto10);
-//        System.out.println("\nRequest 7 - by BigInteger code");
-//        accountList = getAccounts(accountService, request7);
-//
-//        // Запрос 8
-//        AccountsRequest request8 = new AccountsRequest();
-//        request8.getList().add(new KeyValueParamsDto());
-//        System.out.println("\nRequest 8 - by empty param");
-//        accountList = getAccounts(accountService, request8);
+        // Запрос 6
+        AccountsRequest request6 = new AccountsRequest();
+        KeyValueParamsDto paramsDto9 = new KeyValueParamsDto();
+        paramsDto9.setKey("code");
+        paramsDto9.setValue(47L);
+        paramsDto9.setCompareOperation("LIKE");
+        paramsDto9.setLogicOperation("AND");
+        request6.getList().add(paramsDto9);
+        System.out.println("\nЗапрос 6 - by Long code");
+        accountList = getAccounts(target, request6);
+
+        // Запрос 7
+        AccountsRequest request7 = new AccountsRequest();
+        KeyValueParamsDto paramsDto10 = new KeyValueParamsDto();
+        paramsDto10.setKey("code");
+        paramsDto10.setValue(BigInteger.TEN);
+        paramsDto10.setCompareOperation("LIKE");
+        paramsDto10.setLogicOperation("AND");
+        request7.getList().add(paramsDto10);
+        System.out.println("\nЗапрос 7 - by BigInteger code");
+        accountList = getAccounts(target, request7);
+
+        // Запрос 8
+        AccountsRequest request8 = new AccountsRequest();
+        request8.getList().add(new KeyValueParamsDto());
+        System.out.println("\nЗапрос 8 - by empty param");
+        accountList = getAccounts(target, request8);
     }
 
     private static List<Account> getAccounts(WebTarget target, AccountsRequest accountsRequest) {

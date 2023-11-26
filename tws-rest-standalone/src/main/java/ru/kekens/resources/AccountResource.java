@@ -4,6 +4,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.apache.commons.lang3.StringUtils;
 import ru.kekens.dto.AccountsRequest;
+import ru.kekens.exception.AccountServiceException;
 import ru.kekens.model.Account;
 import ru.kekens.dao.AccountDAO;
 import ru.kekens.dto.KeyValueParamsDto;
@@ -27,8 +28,24 @@ public class AccountResource {
 
     @Path("/{id}")
     @GET
-    public Account getAccountById(@PathParam("id") Long id) {
-        return getAccountDAO().getAccountById(id);
+    public Account getAccountById(@PathParam("id") Long id) throws AccountServiceException {
+        String faultInfo = "Ошибка при поиске счета по ID = " + id;
+        // Проверка id на null
+        if (id == null) {
+            throw new AccountServiceException(faultInfo, "Идентификатор счета не задан");
+        }
+
+        // Проверка валидного значения ID
+        if (id < 0) {
+            throw new AccountServiceException(faultInfo, "Переданный идентификатор должен быть больше 0");
+        }
+        Account result =  getAccountDAO().getAccountById(id);
+        // Проверяем результат на пустоту
+        if (result == null) {
+            throw new AccountServiceException(faultInfo, "Не найден счет с ID = " + id);
+        }
+
+        return result;
     }
 
     @GET
@@ -38,31 +55,90 @@ public class AccountResource {
 
     @Path("/filter")
     @POST
-    public List<Account> getAccounts(AccountsRequest accountsRequest) {
+    public List<Account> getAccounts(AccountsRequest accountsRequest) throws AccountServiceException {
+        String baseMessage = "Ошибка при поиске счетов по параметрам";
         // Проверяем параметры
-        parseDateInRequest(accountsRequest.getList());
         List<KeyValueParamsDto> params = accountsRequest.getList();
+        if (params != null) {
+            for (KeyValueParamsDto entry : params) {
+                // Проверяем значение
+                ValidationResult validationResult = checkValueParams(entry, true);
+                if (!validationResult.getSuccess()) {
+                    throw new AccountServiceException(baseMessage, validationResult.getErrorMessage());
+                }
+            }
+        }
         return getAccountDAO().getAccountsByParams(params);
     }
 
     @POST
-    public Long insertAccount(AccountsRequest accountsRequest) {
+    public Long insertAccount(AccountsRequest accountsRequest) throws AccountServiceException {
+        String baseMessage = "Ошибка при вставке счета";
         // Проверяем параметры
-        parseDateInRequest(accountsRequest.getList());
+        List<KeyValueParamsDto> params = accountsRequest.getList();
+        if (params != null) {
+            for (KeyValueParamsDto entry : params) {
+                // Проверяем значение
+                ValidationResult validationResult = checkValueParams(entry);
+                if (!validationResult.getSuccess()) {
+                    throw new AccountServiceException(baseMessage, validationResult.getErrorMessage());
+                }
+            }
+        }
+        // Проверяем число переданных параметров
+        if (params == null || params.size() != FIELD_ORDER.size()) {
+            int size = params == null ? 0 : params.size();
+            throw new AccountServiceException(baseMessage, "Для вставки счета передано недостаточное количество параметров - " +
+                    size + " вместо " + FIELD_ORDER.size());
+        }
+
         return getAccountDAO().insertAccount(accountsRequest.getList());
     }
 
     @Path("/{id}")
     @PUT
-    public Boolean updateAccount(@PathParam("id") Long id, AccountsRequest accountsRequest) {
-        // Проверяем параметры
-        parseDateInRequest(accountsRequest.getList());
+    public Boolean updateAccount(@PathParam("id") Long id, AccountsRequest accountsRequest) throws AccountServiceException {
+        String baseMessage = "Ошибка при обновлении счета с ID = " + id;
+        // Проверяем существует ли счет
+        try {
+            getAccountById(id);
+        } catch (AccountServiceException e) {
+            throw new AccountServiceException(baseMessage, e.getMessage());
+        }
+        // Проверка параметров на пустоту
+        List<KeyValueParamsDto> params = accountsRequest != null ? accountsRequest.getList() : null;
+        if (params == null || params.isEmpty()) {
+            throw new AccountServiceException(baseMessage, "Для обновления счета не передано ни одного параметра");
+        }
+
+        // Проверка параметров
+        for (KeyValueParamsDto entry : params) {
+            // Проверяем значение
+            ValidationResult validationResult = checkValueParams(entry);
+            if (!validationResult.getSuccess()) {
+                throw new AccountServiceException(baseMessage, validationResult.getErrorMessage());
+            }
+        }
+
+        // Проверяем существует ли счет
+        getAccountById(id);
+
         return getAccountDAO().updateAccount(id, accountsRequest.getList());
     }
 
     @Path("/{id}")
     @DELETE
-    public Boolean deleteAccount(@PathParam("id") Long id) {
+    public Boolean deleteAccount(@PathParam("id") Long id) throws AccountServiceException {
+        String baseMessage = "Ошибка при удалении счета с ID = " + id;
+        // Проверка id на null
+        if (id == null) {
+            throw new AccountServiceException(baseMessage, "Идентификатор счета не задан");
+        }
+
+        // Проверка валидного значения ID
+        if (id < 0) {
+            throw new AccountServiceException(baseMessage, "Переданный идентификатор должен быть больше 0");
+        }
         return getAccountDAO().deleteAccount(id);
     }
 

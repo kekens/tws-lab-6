@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ru.kekens</groupId>
-    <artifactId>tws-lab-5-rest-crud</artifactId>
+    <artifactId>tws-lab-6-rest-exc-handle</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>tws-lab-5-rest-crud</name>
+    <name>tws-lab-6-rest-exc-handle</name>
     <packaging>pom</packaging>
     <modules>
         <module>tws-rest-standalone</module>

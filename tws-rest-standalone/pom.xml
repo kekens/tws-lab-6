@@ -6,7 +6,7 @@
 
     <parent>
         <groupId>ru.kekens</groupId>
-        <artifactId>tws-lab-5-rest-crud</artifactId>
+        <artifactId>tws-lab-6-rest-exc-handle</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <artifactId>tws-rest-standalone</artifactId>

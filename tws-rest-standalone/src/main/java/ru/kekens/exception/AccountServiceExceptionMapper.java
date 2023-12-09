@@ -10,8 +10,7 @@ public class AccountServiceExceptionMapper implements ExceptionMapper<AccountSer
 
     @Override
     public Response toResponse(AccountServiceException e) {
-        return
-                Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+        return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
     }
 
 }

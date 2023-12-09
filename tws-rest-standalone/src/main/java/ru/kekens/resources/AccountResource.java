@@ -9,9 +9,8 @@ import ru.kekens.model.Account;
 import ru.kekens.dao.AccountDAO;
 import ru.kekens.dto.KeyValueParamsDto;
 
-import javax.jws.WebMethod;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -60,6 +59,7 @@ public class AccountResource {
         // Проверяем параметры
         List<KeyValueParamsDto> params = accountsRequest.getList();
         if (params != null) {
+            parseDateInRequest(params);
             for (KeyValueParamsDto entry : params) {
                 // Проверяем значение
                 ValidationResult validationResult = checkValueParams(entry, true);
@@ -77,6 +77,7 @@ public class AccountResource {
         // Проверяем параметры
         List<KeyValueParamsDto> params = accountsRequest.getList();
         if (params != null) {
+            parseDateInRequest(params);
             for (KeyValueParamsDto entry : params) {
                 // Проверяем значение
                 ValidationResult validationResult = checkValueParams(entry);
@@ -92,7 +93,11 @@ public class AccountResource {
                     size + " вместо " + FIELD_ORDER.size());
         }
 
-        return getAccountDAO().insertAccount(accountsRequest.getList());
+        try {
+            return getAccountDAO().insertAccount(accountsRequest.getList());
+        } catch (SQLException e) {
+            throw new AccountServiceException(baseMessage, e.getMessage());
+        }
     }
 
     @Path("/{id}")
@@ -111,6 +116,7 @@ public class AccountResource {
             throw new AccountServiceException(baseMessage, "Для обновления счета не передано ни одного параметра");
         }
 
+        parseDateInRequest(params);
         // Проверка параметров
         for (KeyValueParamsDto entry : params) {
             // Проверяем значение
@@ -183,7 +189,7 @@ public class AccountResource {
         Object value = keyValueParamsDto.getValue();
         if (!(value instanceof String) && !(value instanceof Long)
                 && !(value instanceof Integer) && !(value instanceof BigDecimal)
-                && !(value instanceof XMLGregorianCalendar))
+                && !(value instanceof Date))
         {
             return new ValidationResult(false,
                     "Не поддерживается тип данных параметра " + value.getClass().getName());
@@ -243,7 +249,7 @@ public class AccountResource {
                 correct = value instanceof BigDecimal;
                 break;
             case "open_date":
-                correct = value instanceof XMLGregorianCalendar;
+                correct = value instanceof Date;
                 break;
         }
 

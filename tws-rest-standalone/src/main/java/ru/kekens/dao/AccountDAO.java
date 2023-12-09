@@ -5,7 +5,6 @@ import ru.kekens.model.Account;
 import ru.kekens.utils.ConnectionUtil;
 import ru.kekens.dto.KeyValueParamsDto;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -99,7 +98,7 @@ public class AccountDAO {
      * @param params параметры для создания счета
      * @return идентификатор нового счета
      */
-    public Long insertAccount(List<KeyValueParamsDto> params) {
+    public Long insertAccount(List<KeyValueParamsDto> params) throws SQLException {
         // Формируем запрос
         long id = -1L;
         params.sort(Comparator.comparing(param -> FIELD_ORDER.indexOf(param.getKey())));
@@ -115,6 +114,7 @@ public class AccountDAO {
             }
         } catch (SQLException ex) {
             Logger.getLogger(AccountDAO.class.getName()).log(Level.SEVERE, null, ex);
+            throw ex;
         }
 
         return id;

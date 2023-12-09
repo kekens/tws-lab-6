@@ -81,6 +81,7 @@ public class RestfulServiceClient {
                 "New id: " + id2);
 
         // Запрос 3
+        System.out.println("\nRequest 3 - INSERT not all params\n");
         AccountsRequest requestIns3 = new AccountsRequest();
         KeyValueParamsDto paramsInsDto11 = new KeyValueParamsDto();
         paramsInsDto11.setKey("label");
@@ -88,8 +89,6 @@ public class RestfulServiceClient {
         requestIns3.getList().add(paramsInsDto11);
         Long id3 = insertAccount(target, requestIns3);
 
-        System.out.println("\nЗапрос 3 - INSERT (New account 3)\n" +
-                "New id: " + id3);
 
         // Запрос 4
         System.out.println("\nЗапрос 4 - INSERT wrong param amount5\n");
@@ -174,17 +173,13 @@ public class RestfulServiceClient {
         }
 
         // Запрос 3 - Update account null
-        System.out.println("\nЗапрос 3 - Update account null");
+        System.out.println("\nЗапрос 3 - Update account empty params");
         AccountsRequest requestUpd3 = new AccountsRequest();
-        updateAccount(target, null, null);
-
-        // Запрос 4 - Update account empty
-        System.out.println("Request 4 - Update account empty");
-        updateAccount(target, id2, null);
+        updateAccount(target, id2, new AccountsRequest());
 
         // Запрос 5 - Update not existed account
-        System.out.println("Request 5 - Update account empty");
-        updateAccount(target, 100100L, null);
+        System.out.println("Запрос 4 - Update account empty");
+        updateAccount(target, 100100L, new AccountsRequest());
         System.out.println("------ END UPDATE ACCOUNTS ------ ");
         
         System.out.println("------ END UPDATE ACCOUNTS ------ ");
@@ -377,18 +372,36 @@ public class RestfulServiceClient {
         } else {
             response = target.path("filter").request(MediaType.APPLICATION_JSON).post(Entity.entity(accountsRequest, MediaType.APPLICATION_JSON), Response.class);
         }
-        return response.readEntity(new GenericType<>() {});
+
+        if (response.getStatus() == Response.Status.BAD_REQUEST.getStatusCode()) {
+            System.out.println(response.readEntity(String.class));
+        } else {
+            return response.readEntity(new GenericType<>() {});
+        }
+
+        return null;
     }
 
     private static Long insertAccount(WebTarget target, AccountsRequest accountsRequest) {
         Response response = null;
         response = target.request(MediaType.APPLICATION_JSON).post(Entity.entity(accountsRequest, MediaType.APPLICATION_JSON), Response.class);
-        return response.readEntity(new GenericType<>() {});
+
+        if (response.getStatus() == Response.Status.BAD_REQUEST.getStatusCode()) {
+            System.out.println(response.readEntity(String.class));
+        } else {
+            return response.readEntity(Long.class);
+        }
+
+        return null;
     }
 
     private static void updateAccount(WebTarget target, Long id, AccountsRequest accountsRequest) {
         Response response = null;
-        target.path(String.valueOf(id)).request(MediaType.APPLICATION_JSON).put(Entity.entity(accountsRequest, MediaType.APPLICATION_JSON), Response.class);
+        response = target.path(String.valueOf(id)).request(MediaType.APPLICATION_JSON).put(Entity.entity(accountsRequest, MediaType.APPLICATION_JSON), Response.class);
+
+        if (response.getStatus() == Response.Status.BAD_REQUEST.getStatusCode()) {
+            System.out.println(response.readEntity(String.class));
+        }
     }
 
     private static void deleteAccount(WebTarget target, Long id) {

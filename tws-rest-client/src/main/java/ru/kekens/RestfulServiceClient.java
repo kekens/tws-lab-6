@@ -182,8 +182,6 @@ public class RestfulServiceClient {
         updateAccount(target, 100100L, new AccountsRequest());
         System.out.println("------ END UPDATE ACCOUNTS ------ ");
         
-        System.out.println("------ END UPDATE ACCOUNTS ------ ");
-
         // Запросы по удалению счетов
         System.out.println("\n------ START DELETE ACCOUNTS ------ ");
         System.out.println("Запрос 1 - DELETE FROM account " +
@@ -196,13 +194,8 @@ public class RestfulServiceClient {
                 "WHERE id = " + id2);
         deleteAccount(target, id2);
 
-        // Запрос 3 - Delete account by null
+        // Запрос 3 - Delete account with negative id
         System.out.println("Request 3 - DELETE FROM account " +
-                "WHERE id = null");
-        deleteAccount(target, null);
-
-        // Запрос 4 - Delete account with negative id
-        System.out.println("Request 4 - DELETE FROM account " +
                 "WHERE id = -1");
         deleteAccount(target, -1L);
 
@@ -334,28 +327,26 @@ public class RestfulServiceClient {
                 "date = \"2020-04-05\". Found " + accountList.size() + " accounts");
         printAccountInfo(accountList);
 
-        System.out.println("------ END GET ACCOUNTS ------ ");
-
         // Запрос 6
         AccountsRequest request6 = new AccountsRequest();
         KeyValueParamsDto paramsDto9 = new KeyValueParamsDto();
         paramsDto9.setKey("code");
-        paramsDto9.setValue(47L);
+        paramsDto9.setValue(BigDecimal.TEN);
         paramsDto9.setCompareOperation("LIKE");
         paramsDto9.setLogicOperation("AND");
         request6.getList().add(paramsDto9);
-        System.out.println("\nЗапрос 6 - by Long code");
+        System.out.println("\nЗапрос 6 - by BigDecimal code");
         accountList = getAccounts(target, request6);
 
         // Запрос 7
         AccountsRequest request7 = new AccountsRequest();
         KeyValueParamsDto paramsDto10 = new KeyValueParamsDto();
-        paramsDto10.setKey("code");
-        paramsDto10.setValue(BigInteger.TEN);
+        paramsDto10.setKey("close_date");
+        paramsDto10.setValue("2021-04-05");
         paramsDto10.setCompareOperation("LIKE");
         paramsDto10.setLogicOperation("AND");
         request7.getList().add(paramsDto10);
-        System.out.println("\nЗапрос 7 - by BigInteger code");
+        System.out.println("\nЗапрос 7 - by not existed field");
         accountList = getAccounts(target, request7);
 
         // Запрос 8
@@ -363,6 +354,8 @@ public class RestfulServiceClient {
         request8.getList().add(new KeyValueParamsDto());
         System.out.println("\nЗапрос 8 - by empty param");
         accountList = getAccounts(target, request8);
+
+        System.out.println("------ END GET ACCOUNTS ------ ");
     }
 
     private static List<Account> getAccounts(WebTarget target, AccountsRequest accountsRequest) {
@@ -406,7 +399,11 @@ public class RestfulServiceClient {
 
     private static void deleteAccount(WebTarget target, Long id) {
         Response response = null;
-        target.path(String.valueOf(id)).request(MediaType.APPLICATION_JSON).delete(Response.class);
+        response = target.path(String.valueOf(id)).request(MediaType.APPLICATION_JSON).delete(Response.class);
+
+        if (response.getStatus() == Response.Status.BAD_REQUEST.getStatusCode()) {
+            System.out.println(response.readEntity(String.class));
+        }
     }
 
     private static void deleteAccount(WebTarget target) {

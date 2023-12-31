@@ -1,8 +1,5 @@
 package ru.kekens.exception;
 
-import javax.xml.ws.WebFault;
-
-@WebFault(faultBean = "ru.kekens.exception.AccountServiceFault")
 public class AccountServiceException extends Exception {
 
     private static final String DEFAULT_MESSAGE = "Ошибка в сервисе счетов: ";

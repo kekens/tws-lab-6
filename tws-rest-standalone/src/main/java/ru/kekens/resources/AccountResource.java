@@ -183,7 +183,7 @@ public class AccountResource {
             return new ValidationResult(false, "Ключ параметра пустой");
         }
         if (!FIELD_ORDER.contains(key) && !key.equals("id")) {
-            return new ValidationResult(false, "У сущности Account не существует поля \" + key");
+            return new ValidationResult(false, "У сущности Account не существует поля \"" + key + "\"");
         }
         // Проверяем тип данных
         Object value = keyValueParamsDto.getValue();
